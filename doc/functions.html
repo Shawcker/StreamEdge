@@ -10,38 +10,45 @@
 <hr>
 
 <h1>Module functions</h1>
-<ul class="index"><li><a href="#description">Description</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>Module containing available aggregate functions.
+<ul class="index"><li><a href="#description">Description</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>Module containing available functions used as aggregates or for filtering.
 
 
-<h2><a name="description">Description</a></h2>Module containing available aggregate functions.
+<h2><a name="description">Description</a></h2>Module containing available functions used as aggregates or for filtering.
 <h2><a name="index">Function Index</a></h2>
-<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#max-2">max/2</a></td><td>Max function.</td></tr>
-<tr><td valign="top"><a href="#mean-2">mean/2</a></td><td>Mean function.</td></tr>
-<tr><td valign="top"><a href="#median-2">median/2</a></td><td>Median function.</td></tr>
-<tr><td valign="top"><a href="#min-2">min/2</a></td><td>Min function.</td></tr>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#filter_above-3">filter_above/3</a></td><td>Filters the first 'Amount' items of the list 'Values', by removing any strictly superior to 'Upperbound'.</td></tr>
+<tr><td valign="top"><a href="#filter_above_under-4">filter_above_under/4</a></td><td>Filters the first 'Amount' items of the list 'Values', by removing any strictly superior to 'Upperbound' and strictly inferior to 'Lowerbound'.</td></tr>
+<tr><td valign="top"><a href="#filter_under-3">filter_under/3</a></td><td>Filters the first 'Amount' items of the list 'Values', by removing any strictly inferior to 'Lowerbound'.</td></tr>
+<tr><td valign="top"><a href="#mean-1">mean/1</a></td><td>Gives the mean of items contained the list 'Values'.</td></tr>
+<tr><td valign="top"><a href="#median-1">median/1</a></td><td>Gives the median value of the first 'Amount' items of the list 'Values'.</td></tr>
 </table>
 
 <h2><a name="functions">Function Details</a></h2>
 
-<h3 class="function"><a name="max-2">max/2</a></h3>
+<h3 class="function"><a name="filter_above-3">filter_above/3</a></h3>
 <div class="spec">
-<p><tt>max(Values::[float()], Amount::integer()) -&gt; {Result::float(), Number_of_values::integer()}</tt><br></p>
-</div><p>Max function.</p>
+<p><tt>filter_above(Values::[float()], Amount::integer(), Upperbound::float()) -&gt; {Result::float(), Number_of_values::integer()}</tt><br></p>
+</div><p>Filters the first 'Amount' items of the list 'Values', by removing any strictly superior to 'Upperbound'.</p>
 
-<h3 class="function"><a name="mean-2">mean/2</a></h3>
+<h3 class="function"><a name="filter_above_under-4">filter_above_under/4</a></h3>
 <div class="spec">
-<p><tt>mean(Values::[float()], Amount::integer()) -&gt; {Result::float(), Number_of_values::integer()}</tt><br></p>
-</div><p>Mean function.</p>
+<p><tt>filter_above_under(Values::[float()], Amount::integer(), Upperbound::float(), Lowerbound::float()) -&gt; {Result::float(), Number_of_values::integer()}</tt><br></p>
+</div><p>Filters the first 'Amount' items of the list 'Values', by removing any strictly superior to 'Upperbound' and strictly inferior to 'Lowerbound'.</p>
 
-<h3 class="function"><a name="median-2">median/2</a></h3>
+<h3 class="function"><a name="filter_under-3">filter_under/3</a></h3>
 <div class="spec">
-<p><tt>median(Values::[float()], Amount::integer()) -&gt; {Result::float(), Number_of_values::integer()}</tt><br></p>
-</div><p>Median function.</p>
+<p><tt>filter_under(Values::[float()], Amount::integer(), Lowerbound::float()) -&gt; {Result::float(), Number_of_values::integer()}</tt><br></p>
+</div><p>Filters the first 'Amount' items of the list 'Values', by removing any strictly inferior to 'Lowerbound'.</p>
 
-<h3 class="function"><a name="min-2">min/2</a></h3>
+<h3 class="function"><a name="mean-1">mean/1</a></h3>
 <div class="spec">
-<p><tt>min(Values::[float()], Amount::integer()) -&gt; {Result::float(), Number_of_values::integer()}</tt><br></p>
-</div><p>Min function.</p>
+<p><tt>mean(Values::[float()]) -&gt; {Result::float(), Number_of_values::integer()}</tt><br></p>
+</div><p>Gives the mean of items contained the list 'Values'.
+  Items in the list 'Values' are tuples {Value, Timestamp}.</p>
+
+<h3 class="function"><a name="median-1">median/1</a></h3>
+<div class="spec">
+<p><tt>median(Values::[float()]) -&gt; {Result::float(), Number_of_values::integer()}</tt><br></p>
+</div><p>Gives the median value of the first 'Amount' items of the list 'Values'.</p>
 <hr>
 
 <div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>

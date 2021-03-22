@@ -31,12 +31,12 @@
 
 <h3 class="function"><a name="start-2">start/2</a></h3>
 <div class="spec">
-<p><tt>start(Amount::integer(), Function::fun((Values::[float()], Amount::integer()) -&gt; {Result::float(), Number_of_values::integer()})) -&gt; {ok, Pid}</tt><br></p>
+<p><tt>start(Function::fun((Values::[float()], Amount::integer()) -&gt; {Result::float(), Number_of_values::integer()}), Amount::integer()) -&gt; {ok, Pid}</tt><br></p>
 </div><p>Main start function. Need to specify a default amount.</p>
 
 <h3 class="function"><a name="start_loop-2">start_loop/2</a></h3>
 <div class="spec">
-<p><tt>start_loop(Amount, Function) -&gt; any()</tt></p>
+<p><tt>start_loop(Function, Amount) -&gt; any()</tt></p>
 </div><p>Starts and restarts main loop.</p>
 <hr>
 
