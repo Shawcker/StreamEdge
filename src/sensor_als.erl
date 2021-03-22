@@ -2,6 +2,7 @@
 
 -module(sensor_als).
 -export([start/0, start/1, start/2]).
+-export([start_loop/1]).
 
 -record(data_rate, {rate=1000}).
 -record(clients_list, {clients=[]}).
@@ -21,7 +22,8 @@ start(Rate) when Rate < 1000 ->
 
 %% @doc Special start function. Used when no need to init i.e. sensor has already been added.
 start(Rate, no_init) when Rate >= 1000 ->
-  start_loop(Rate);
+  Pid = spawn(?MODULE, start_loop, [Rate]),
+  {ok, Pid};
 start(Rate, no_init) when Rate < 1000 ->
   start(1000, no_init).
 
@@ -40,7 +42,7 @@ loop(L=#clients_list{clients=Clients}, R=#data_rate{rate=Rate}) ->
     value ->
       Percentage = pmod_als:percentage(),
       Timestamp = erlang:timestamp(),
-      ok = send_to_clients(L#clients_list.clients, Percentage, Timestamp),
+      ok = utils:send_to_clients(Clients, {Percentage, Timestamp}, self()),
       timer:sleep(Rate),
       self() ! value,
       loop(L, R);
@@ -58,10 +60,3 @@ loop(L=#clients_list{clients=Clients}, R=#data_rate{rate=Rate}) ->
       io:format("Unexpected message format~n"),
       loop(L, R)
   end.
-
-
-send_to_clients([], _, _) ->
-  ok;
-send_to_clients([C|Rest], Percentage, Timestamp) ->
-  C ! {value, {Percentage, Timestamp}, self()},
-  send_to_clients(Rest, Percentage, Timestamp).

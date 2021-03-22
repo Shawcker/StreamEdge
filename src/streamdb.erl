@@ -28,21 +28,9 @@ stop(_State) -> ok.
 
 loop() ->
   receive
-    {value, {Percentage, _Timestamp}, Pid} ->
-      io:format("Value received from process ~p: ~p~n", [Pid, Percentage]),
-      loop();
-
-    {mean, {Mean, Amount}, Pid} ->
-      io:format("-- Mean over ~p values received from process ~p: ~p~n", [Amount, Pid, Mean]),
-      loop();
-
-    {max, {Max, Amount}, Pid} ->
-      io:format("-- Maximum of last ~p values received from process ~p: ~p~n", [Amount, Pid, Max]),
-      loop();
-
-    {min, {Min, Amount}, Pid} ->
-      io:format("-- Minimum of last ~p values received from process ~p: ~p~n", [Amount, Pid, Min]),
-      loop();      
+    {value, {Value, _Timestamp}, From} ->
+      io:format("Value received from process ~p: ~p~n", [From, Value]),
+      loop(); 
 
     _ ->
       io:format("Unexpected message format~n"),
@@ -56,22 +44,22 @@ add_sensor_als() ->
 
 
 add_mean_proc() ->
-  {ok, Pid} = aggregate:start(fun functions:mean/2),
+  {ok, Pid} = aggregate:start(fun functions:mean/1),
   Pid.
 
 
 add_median_proc() ->
-  {ok, Pid} = aggregate:start(fun functions:median/2),
+  {ok, Pid} = aggregate:start(fun functions:median/1),
   Pid.
 
 
 add_max_proc() ->
-  {ok, Pid} = aggregate:start(fun functions:max/2),
+  {ok, Pid} = aggregate:start(fun lists:max/1),
   Pid.
 
 
 add_min_proc() ->
-  {ok, Pid} = aggregate:start(fun functions:min/2),
+  {ok, Pid} = aggregate:start(fun lists:min/1),
   Pid.
 
 
