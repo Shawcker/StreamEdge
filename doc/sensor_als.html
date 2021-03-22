@@ -10,13 +10,14 @@
 <hr>
 
 <h1>Module sensor_als</h1>
-<ul class="index"><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>
+<ul class="index"><li><a href="#description">Description</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>Module handling pmod_als sensor.
 
 
+<h2><a name="description">Description</a></h2>Module handling pmod_als sensor.
 <h2><a name="index">Function Index</a></h2>
-<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#start-0">start/0</a></td><td></td></tr>
-<tr><td valign="top"><a href="#start-1">start/1</a></td><td></td></tr>
-<tr><td valign="top"><a href="#start-2">start/2</a></td><td></td></tr>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#start-0">start/0</a></td><td>Default start function.</td></tr>
+<tr><td valign="top"><a href="#start-1">start/1</a></td><td>Main start function.</td></tr>
+<tr><td valign="top"><a href="#start-2">start/2</a></td><td>Special start function.</td></tr>
 </table>
 
 <h2><a name="functions">Function Details</a></h2>
@@ -24,17 +25,17 @@
 <h3 class="function"><a name="start-0">start/0</a></h3>
 <div class="spec">
 <p><tt>start() -&gt; any()</tt></p>
-</div>
+</div><p>Default start function. Uses a default rate of 1 per second.</p>
 
 <h3 class="function"><a name="start-1">start/1</a></h3>
 <div class="spec">
 <p><tt>start(Rate) -&gt; any()</tt></p>
-</div>
+</div><p>Main start function. Need to specify a data rate.</p>
 
 <h3 class="function"><a name="start-2">start/2</a></h3>
 <div class="spec">
 <p><tt>start(Rate, X2) -&gt; any()</tt></p>
-</div>
+</div><p>Special start function. Used when no need to init i.e. sensor has already been added.</p>
 <hr>
 
 <div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>

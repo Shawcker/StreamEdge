@@ -1,3 +1,5 @@
+%% @doc Module handling pmod_als sensor.
+
 -module(sensor_als).
 -export([start/0, start/1, start/2]).
 
@@ -5,15 +7,19 @@
 -record(clients_list, {clients=[]}).
 
 
+%% @doc Default start function. Uses a default rate of 1 per second.
 start() ->
   start(1000).
 
+%% @doc Main start function. Need to specify a data rate.
 start(Rate) when Rate >= 1000 ->
   init(),
-  start_loop(Rate);
+  Pid = spawn(?MODULE, start_loop, [Rate]),
+  {ok, Pid};
 start(Rate) when Rate < 1000 ->
   start(1000).
 
+%% @doc Special start function. Used when no need to init i.e. sensor has already been added.
 start(Rate, no_init) when Rate >= 1000 ->
   start_loop(Rate);
 start(Rate, no_init) when Rate < 1000 ->

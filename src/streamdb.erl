@@ -11,14 +11,15 @@
 %--- Callbacks -----------------------------------------------------------------
 
 %% @doc start main application
-%% @todo accept input query and parse it
+%% @TODO: accept input query and parse it
 start(_Type, _Args) ->
   streamdb_sup:start_link(),
-  Sensor_pid = add_sensor(),
-  {ok, Mean_pid} = aggregate:start(fun functions:mean/2),
+  Sensor_pid = add_sensor_als(),
+  subscribe(self(), Sensor_pid),
 
-  Sensor_pid ! {add_client, Mean_pid},
-  Mean_pid ! {add_client, self()},
+  Mean_pid = add_mean_proc(),
+  subscribe(Mean_pid, Sensor_pid),
+  subscribe(self(), Mean_pid),
 
   loop().
 
@@ -49,7 +50,30 @@ loop() ->
   end.
 
 
-add_sensor() ->
-  Sensor_pid = spawn(sensor_als, start, []),
-  Sensor_pid ! {add_client, self()},
-  Sensor_pid.
+add_sensor_als() ->
+  {ok, Pid} = sensor_als:start(),
+  Pid.
+
+
+add_mean_proc() ->
+  {ok, Pid} = aggregate:start(fun functions:mean/2),
+  Pid.
+
+
+add_median_proc() ->
+  {ok, Pid} = aggregate:start(fun functions:median/2),
+  Pid.
+
+
+add_max_proc() ->
+  {ok, Pid} = aggregate:start(fun functions:max/2),
+  Pid.
+
+
+add_min_proc() ->
+  {ok, Pid} = aggregate:start(fun functions:min/2),
+  Pid.
+
+
+subscribe(Subscriber_pid, Module_pid) ->
+  Module_pid ! {add_client, Subscriber_pid}.

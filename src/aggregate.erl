@@ -1,8 +1,6 @@
-
 %% @doc Module responsible for handling aggregates.
 %% Several functions are used to specify which aggregate is to be computed.
 %% @see functions
-%% @end
 
 -module(aggregate).
 -export([start/1, start/2]).
