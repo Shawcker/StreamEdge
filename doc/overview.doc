@@ -1,0 +1,4 @@
+@author A. Popeler <antoine.popeler@student.uclouvain.be>
+@version 0.1.0
+@title Welcome to the 'streamdb' application!
+@doc 'streamdb' is an application designed to run on GRiSP boards (<GRiSP.org>). The final goal is to be able to query data gathered from sensors directly connected on the boards. Queries will be of the SQL type and results will be displayed graphically.

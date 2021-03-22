@@ -1,0 +1,3 @@
+%% encoding: UTF-8
+{application,streamdb}.
+{modules,[aggregate,functions,sensor_als,streamdb,streamdb_sup]}.
