@@ -20,7 +20,7 @@ start(Rate) when Rate >= 1000 ->
 start(Rate) when Rate < 1000 ->
   start(1000).
 
-%% @doc Special start function. Used when no need to init i.e. sensor has already been added.
+%% @doc Special start function. Used when no need to init i.e. sensor has already been added (testing purposes).
 start(Rate, no_init) when Rate >= 1000 ->
   Pid = spawn(?MODULE, start_loop, [Rate]),
   {ok, Pid};
