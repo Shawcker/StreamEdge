@@ -15,40 +15,40 @@
 
 <h2><a name="description">Description</a></h2>Module containing available functions used as aggregates or for filtering.
 <h2><a name="index">Function Index</a></h2>
-<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#filter_above-3">filter_above/3</a></td><td>Filters the first 'Amount' items of the list 'Values', by removing any strictly superior to 'Upperbound'.</td></tr>
-<tr><td valign="top"><a href="#filter_above_under-4">filter_above_under/4</a></td><td>Filters the first 'Amount' items of the list 'Values', by removing any strictly superior to 'Upperbound' and strictly inferior to 'Lowerbound'.</td></tr>
-<tr><td valign="top"><a href="#filter_under-3">filter_under/3</a></td><td>Filters the first 'Amount' items of the list 'Values', by removing any strictly inferior to 'Lowerbound'.</td></tr>
-<tr><td valign="top"><a href="#mean-1">mean/1</a></td><td>Gives the mean of items contained the list 'Values'.</td></tr>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#mean-1">mean/1</a></td><td>Gives the mean of items contained the list 'Values'.</td></tr>
 <tr><td valign="top"><a href="#median-1">median/1</a></td><td>Gives the median value of the first 'Amount' items of the list 'Values'.</td></tr>
+<tr><td valign="top"><a href="#pred_filter_above-1">pred_filter_above/1</a></td><td>Predicate used to filter values above a certain threshold ('Upperbound').</td></tr>
+<tr><td valign="top"><a href="#pred_filter_above_under-2">pred_filter_above_under/2</a></td><td>Predicate used to filter values outside a certain range (outside ['Lowerbound', 'Upperbound']).</td></tr>
+<tr><td valign="top"><a href="#pred_filter_under-1">pred_filter_under/1</a></td><td>Predicate used to filter values under a certain threshold ('Lowerbound').</td></tr>
 </table>
 
 <h2><a name="functions">Function Details</a></h2>
 
-<h3 class="function"><a name="filter_above-3">filter_above/3</a></h3>
-<div class="spec">
-<p><tt>filter_above(Values::[float()], Amount::integer(), Upperbound::float()) -&gt; {Result::float(), Number_of_values::integer()}</tt><br></p>
-</div><p>Filters the first 'Amount' items of the list 'Values', by removing any strictly superior to 'Upperbound'.</p>
-
-<h3 class="function"><a name="filter_above_under-4">filter_above_under/4</a></h3>
-<div class="spec">
-<p><tt>filter_above_under(Values::[float()], Amount::integer(), Upperbound::float(), Lowerbound::float()) -&gt; {Result::float(), Number_of_values::integer()}</tt><br></p>
-</div><p>Filters the first 'Amount' items of the list 'Values', by removing any strictly superior to 'Upperbound' and strictly inferior to 'Lowerbound'.</p>
-
-<h3 class="function"><a name="filter_under-3">filter_under/3</a></h3>
-<div class="spec">
-<p><tt>filter_under(Values::[float()], Amount::integer(), Lowerbound::float()) -&gt; {Result::float(), Number_of_values::integer()}</tt><br></p>
-</div><p>Filters the first 'Amount' items of the list 'Values', by removing any strictly inferior to 'Lowerbound'.</p>
-
 <h3 class="function"><a name="mean-1">mean/1</a></h3>
 <div class="spec">
-<p><tt>mean(Values::[float()]) -&gt; {Result::float(), Number_of_values::integer()}</tt><br></p>
+<p><tt>mean(Values::[{float(), float()}]) -&gt; Result::float()</tt><br></p>
 </div><p>Gives the mean of items contained the list 'Values'.
   Items in the list 'Values' are tuples {Value, Timestamp}.</p>
 
 <h3 class="function"><a name="median-1">median/1</a></h3>
 <div class="spec">
-<p><tt>median(Values::[float()]) -&gt; {Result::float(), Number_of_values::integer()}</tt><br></p>
+<p><tt>median(Values::[{float(), float()}]) -&gt; Result::float()</tt><br></p>
 </div><p>Gives the median value of the first 'Amount' items of the list 'Values'.</p>
+
+<h3 class="function"><a name="pred_filter_above-1">pred_filter_above/1</a></h3>
+<div class="spec">
+<p><tt>pred_filter_above(Upperbound::float()) -&gt; Function::fun((Value::float()) -&gt; boolean())</tt><br></p>
+</div><p>Predicate used to filter values above a certain threshold ('Upperbound').</p>
+
+<h3 class="function"><a name="pred_filter_above_under-2">pred_filter_above_under/2</a></h3>
+<div class="spec">
+<p><tt>pred_filter_above_under(Lowerbound::float(), Upperbound::float()) -&gt; Function::fun((Value::float()) -&gt; boolean())</tt><br></p>
+</div><p>Predicate used to filter values outside a certain range (outside ['Lowerbound', 'Upperbound']).</p>
+
+<h3 class="function"><a name="pred_filter_under-1">pred_filter_under/1</a></h3>
+<div class="spec">
+<p><tt>pred_filter_under(Lowerbound::float()) -&gt; Function::fun((Value::float()) -&gt; boolean())</tt><br></p>
+</div><p>Predicate used to filter values under a certain threshold ('Lowerbound').</p>
 <hr>
 
 <div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>

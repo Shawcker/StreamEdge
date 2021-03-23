@@ -15,15 +15,15 @@
 
 <h2><a name="description">Description</a></h2>Module containing utilitary functions
 <h2><a name="index">Function Index</a></h2>
-<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#send_to_clients-2">send_to_clients/2</a></td><td>Send tuple {Value, Timestamp} to the list of 'Clients' where each Client is a process Pid
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#send_to_clients-3">send_to_clients/3</a></td><td>Send tuple {Value, Timestamp} to the list of 'Clients' where each Client is a process Pid
   spec send_to_clients(Clients::list(integer()), Message::{Value, Timestamp}) -&gt; ok.</td></tr>
 </table>
 
 <h2><a name="functions">Function Details</a></h2>
 
-<h3 class="function"><a name="send_to_clients-2">send_to_clients/2</a></h3>
+<h3 class="function"><a name="send_to_clients-3">send_to_clients/3</a></h3>
 <div class="spec">
-<p><tt>send_to_clients(Clients, X2) -&gt; any()</tt></p>
+<p><tt>send_to_clients(Clients, X2, Sender) -&gt; any()</tt></p>
 </div><p>Send tuple {Value, Timestamp} to the list of 'Clients' where each Client is a process Pid
   spec send_to_clients(Clients::list(integer()), Message::{Value, Timestamp}) -&gt; ok</p>
 <hr>
