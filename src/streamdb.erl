@@ -14,12 +14,15 @@
 %% @TODO: accept input query and parse it
 start(_Type, _Args) ->
   streamdb_sup:start_link(),
-  Sensor_pid = add_sensor_als(),
-  subscribe(self(), Sensor_pid),
+  %grisp:add_device(spi1, pmod_nav),
+  Msg = pmod_nav:read(acc, [out_x_xl, out_y_xl, out_z_xl], #{xl_unit => mg}),
+  io:format("THIS IS THE POLICE: ~p~n", [Msg]),
+  %Sensor_pid = add_sensor_als(),
+  %subscribe(self(), Sensor_pid),
 
-  Mean_pid = add_mean_proc(),
-  subscribe(Mean_pid, Sensor_pid),
-  subscribe(self(), Mean_pid),
+  %Mean_pid = add_mean_proc(),
+  %subscribe(Mean_pid, Sensor_pid),
+  %subscribe(self(), Mean_pid),
 
   loop().
 
