@@ -5,7 +5,7 @@
 
 %% @doc Gives the mean of items contained the list 'Values'.
 %% Items in the list 'Values' are tuples {Value, Timestamp}.
-%% @spec mean(Values::list(float())) -> {Result::float(), Number_of_values::integer()}
+%% @spec mean(Values::list({float(), float()})) -> {Result::float(), Number_of_values::integer()}
 mean(Values) ->
   Fun = fun({Val, _}) -> Val end,
   Only_values_list = lists:map(Fun, Values),
@@ -15,18 +15,19 @@ mean(Values) ->
 
 
 %% @doc Gives the median value of the first 'Amount' items of the list 'Values'.
-%% @spec median(Values::list(float())) -> {Result::float(), Number_of_values::integer()}
+%% @spec median(Values::list({float(), float()})) -> {Result::float(), Number_of_values::integer()}
 median(Values) ->
   Sorted_list = order(Values),
   Length = length(Sorted_list),
   if
     Length rem 2 == 0 ->
-      N = Length/2,
-      {N1, N2} = {lists:nth(N, Sorted_list), lists:nth(N+1, Sorted_list)},
+      N = ceil(Length/2),
+      {{N1,_}, {N2,_}} = {lists:nth(N, Sorted_list), lists:nth(N+1, Sorted_list)},
       (N1+N2)/2;
     true ->
       N = ceil(Length/2),
-      lists:nth(N, Sorted_list)
+      {Median,_} = lists:nth(N, Sorted_list),
+      Median
   end.
 
 
