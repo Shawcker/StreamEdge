@@ -1,20 +1,39 @@
-%% @doc Module containing available functions used as aggregates or for filtering.
+%% @doc Module containing available functions used as aggregates, filtering or any predifined function.
 
 -module(functions).
--export([mean/1, median/1, pred_filter_above/1, pred_filter_under/1, pred_filter_above_under/2]).
+-export([max/1, min/1, mean/1, median/1, send_trigger/2, pred_filter_above/1, pred_filter_under/1, pred_filter_above_under/2]).
+
+%%% AGGREGATES
+
+
+%% @doc Gives the maximum of items contained the list 'Values'.
+%% Items in the list 'Values' are tuples {Value, Timestamp}.
+%% @spec max(Values::list({float(), float()})) -> Result::float()
+max(Values) ->
+  Only_values_list = only_values(Values),
+  lists:max(Only_values_list).
+
+
+%% @doc Gives the minimum of items contained the list 'Values'.
+%% Items in the list 'Values' are tuples {Value, Timestamp}.
+%% @spec min(Values::list({float(), float()})) -> Result::float()
+min(Values) ->
+  Only_values_list = only_values(Values),
+  lists:min(Only_values_list).
+
 
 %% @doc Gives the mean of items contained the list 'Values'.
 %% Items in the list 'Values' are tuples {Value, Timestamp}.
 %% @spec mean(Values::list({float(), float()})) -> Result::float()
 mean(Values) ->
-  Fun = fun({Val, _}) -> Val end,
-  Only_values_list = lists:map(Fun, Values),
+  Only_values_list = only_values(Values),
   Sum = lists:sum(Only_values_list),
   Length = length(Only_values_list),
   Sum/Length.
 
 
 %% @doc Gives the median value of the first 'Amount' items of the list 'Values'.
+%% Items in the list 'Values' are tuples {Value, Timestamp}.
 %% @spec median(Values::list({float(), float()})) -> Result::float()
 median(Values) ->
   Sorted_list = order(Values),
@@ -31,38 +50,78 @@ median(Values) ->
   end.
 
 
-%% PREDICATES
+%%% TRIGGER
+
+%% @doc Returns a function that sends trigger message to process with pid 'Destination_pid'
+%% @spec send_trigger(Sender_pid::integer(), Destination_pid::integer()) -> Fun
+send_trigger(Sender_pid, Destination_pid) ->
+  fun() ->
+    Destination_pid ! {trigger, Sender_pid},
+    ok
+  end.
+
+
+%%% PREDICATES
 
 %% @doc Predicate used to filter values above a certain threshold ('Upperbound').
-%% @spec pred_filter_above(Upperbound::float()) -> Function::fun((Value::float()) -> boolean())
+%% @spec pred_filter_above(Upperbound::float()) -> Function::fun((Value) -> boolean())
 pred_filter_above(Upperbound) ->
   fun(Value) -> 
-    Upperbound >= Value
+    case Value of
+      {V1, V2, V3} -> B1 = Upperbound >= V1,
+                      B2 = Upperbound >= V2,
+                      B3 = Upperbound >= V3,
+                      B1 and B2 and B3;
+
+      _            -> Upperbound >= Value
+    end
   end.
 
 
 %% @doc Predicate used to filter values under a certain threshold ('Lowerbound').
-%% @spec pred_filter_under(Lowerbound::float()) -> Function::fun((Value::float()) -> boolean())
+%% @spec pred_filter_under(Lowerbound::float()) -> Function::fun((Value) -> boolean())
 pred_filter_under(Lowerbound) ->
-  fun(Value) -> 
-    Lowerbound =< Value
+  fun(Value) ->
+    case Value of
+      {V1, V2, V3} -> B1 = Lowerbound =< V1,
+                      B2 = Lowerbound =< V2,
+                      B3 = Lowerbound =< V3,
+                      B1 and B2 and B3;
+
+      _            -> Lowerbound =< Value
+    end
   end.
 
 
 %% @doc Predicate used to filter values outside a certain range (outside ['Lowerbound', 'Upperbound']).
-%% @spec pred_filter_above_under(Lowerbound::float(), Upperbound::float()) -> Function::fun((Value::float()) -> boolean())
+%% @spec pred_filter_above_under(Lowerbound::float(), Upperbound::float()) -> Function::fun((Value) -> boolean())
 pred_filter_above_under(Lowerbound, Upperbound) ->
-  fun(Value) -> 
-    Upper = Upperbound >= Value,
-    Lower = Lowerbound =< Value,
-    Upper and Lower
+  fun(Value) ->
+    case Value of
+      {V1, V2, V3} -> B1_U = Upperbound >= V1,
+                      B1_L = Lowerbound =< V1,
+                      B2_U = Upperbound >= V2,
+                      B2_L = Lowerbound =< V2,
+                      B3_U = Upperbound >= V3,
+                      B3_L = Lowerbound =< V3,
+                      B1_U and B1_L and B2_U and B2_L and B3_U and B3_L;
+
+      _            -> Upper = Upperbound >= Value,
+                      Lower = Lowerbound =< Value,
+                      Upper and Lower
+    end
   end.
 
 
-%% AUXILIARY FUNCTIONS
+%%% AUXILIARY FUNCTIONS
 
 % Orders List of items of the form {Value, Timestamp}
 order(List) ->
   Compare = fun({A,_}, {B,_}) -> A =< B end,
   lists:sort(Compare, List).
 
+
+% Takes of items {Value, Timestamp} and returns list of Value
+only_values(List) ->
+  Extract = fun({Value, _Timestamp}) -> Value end,
+  lists:map(Extract, List).

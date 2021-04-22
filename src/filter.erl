@@ -19,31 +19,50 @@ start(Predicate) ->
 
 % @doc Starts and restarts main loop.
 start_loop(Predicate) ->
-  loop(#data{predicate=Predicate}, #clients_list{}).
+  loop({true, none}, #data{predicate=Predicate}, #clients_list{}).
 
 
-loop(D=#data{predicate=Predicate}, L=#clients_list{clients=Clients}) ->
+loop({Active, Deactivator}, D=#data{predicate=Predicate}, L=#clients_list{clients=Clients}) ->
   receive
+
     {value, {Value, Timestamp}, _From} ->
-      Condition = Predicate(Value),
       if
-        Condition ->
-          ok = utils:send_to_clients(Clients, {Value, Timestamp}, self()),
-          loop(D, L);
+        not Active ->
+          % Module is deactivated, ignore message
+          loop({Active, Deactivator}, D, L);
         true ->
-          loop(D, L)
+          Condition = Predicate(Value),
+          if
+            Condition ->
+              ok = utils:send_to_clients(Clients, {Value, Timestamp}, self()),
+              loop({Active, Deactivator}, D, L);
+            true ->
+              loop({Active, Deactivator}, D, L)
+          end
       end;
 
+
     {modify, predicate, New_predicate} ->
-      loop(D#data{predicate=New_predicate}, L);
+      loop({Active, Deactivator}, D#data{predicate=New_predicate}, L);
+
+
+    {trigger, From} ->
+      case Deactivator of
+        none -> loop({false, From}, D, L);
+        From -> loop({true, none}, D, L);
+        _ -> loop({Active, Deactivator}, D, L)
+      end;
+
 
     restart ->
       start_loop(Predicate);
 
+
     {add_client, Pid} ->
-      loop(D, L#clients_list{clients=[Pid|Clients]});
+      loop({Active, Deactivator}, D, L#clients_list{clients=[Pid|Clients]});
+
 
     _ ->
       io:format("~p (Pid ~p) received an unexpected message~n", [?MODULE, self()]),
-      loop(D, L)
+      loop({Active, Deactivator}, D, L)
   end.

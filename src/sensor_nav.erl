@@ -1,6 +1,6 @@
-%% @doc Module handling pmod_als sensor.
+%% @doc Module handling pmod_nav sensor.
 
--module(sensor_als).
+-module(sensor_nav).
 -export([start/0, start/1, start/2]).
 -export([start_loop/1]).
 
@@ -34,7 +34,7 @@ start_loop(Rate) ->
 
 
 init() ->
-  grisp:add_device(spi2, pmod_als).
+  grisp:add_device(spi1, pmod_nav).
 
 
 loop({Active, Deactivator}, L=#clients_list{clients=Clients}, R=#data_rate{rate=Rate}) ->
@@ -45,9 +45,9 @@ loop({Active, Deactivator}, L=#clients_list{clients=Clients}, R=#data_rate{rate=
           % Module is deactivated, ignore message
           loop({Active, Deactivator}, L, R);
         true ->
-          Percentage = pmod_als:percentage(),
+          Accelerometer = pmod_nav:read(acc, [out_x_xl, out_y_xl, out_z_xl]),
           Timestamp = erlang:timestamp(),
-          ok = utils:send_to_clients(Clients, {Percentage, Timestamp}, self()),
+          ok = utils:send_to_clients(Clients, {Accelerometer, Timestamp}, self()),
           timer:sleep(Rate),
           self() ! value,
           loop({Active, Deactivator}, L, R)
@@ -71,7 +71,7 @@ loop({Active, Deactivator}, L=#clients_list{clients=Clients}, R=#data_rate{rate=
 
 
     restart ->
-      loop({Active, Deactivator}, #clients_list{}, #data_rate{});
+      start_loop(Rate);
 
 
     _ ->
