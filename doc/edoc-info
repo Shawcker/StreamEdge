@@ -1,3 +1,4 @@
 %% encoding: UTF-8
 {application,streamdb}.
-{modules,[aggregate,filter,functions,sensor_als,streamdb,streamdb_sup,utils]}.
+{modules,[aggregate,conditional,filter,functions,myqueue,sensor_als,
+          sensor_gyro,sensor_nav,streamdb,streamdb_sup,utils]}.
