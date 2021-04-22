@@ -1,0 +1,64 @@
+============================================================================================================
+Describes details about the different modules, such as the messages they are expected to receive and/or send
+============================================================================================================
+
+Modules are connected between each other to form a chain and output a certain result.
+Each module has an input and an output. Inputs/outputs are generally streams of data coming from or going to another module.
+Communication between modules is done through message passing. While most messages comprise of data (value), every module also accepts some control messages used to monitor the module (modify data rate, change function to be executed, restart the module, etc).
+Each module is a process that will execute a loop in which it will wait for messages and perfom actions depending on said received messages.
+Every module has a list of clients which are the Pid's of processes it will send its (computed) data.
+
+Here are every available modules and the messages they can receive or send:
+
+- Common to all modules:
+  - Receive
+    - {add_client, Pid} - module will add 'Pid' to its list of Clients
+    - 'restart' - module will restart its loop (and loose temporary data it kept in memory)
+    - 'trigger' - module will stop/resume looping
+  - Send
+    - {value, {Value, Timestamp}, Sender} - message sent to every client, with either computed or read 'Value', as well as the 'Timestamp' corresponding to this value, 'Sender' is the Pid of the module itself
+    - {list, List, Sender} - same message as above, except for an entire list of {Value, Timestamp} pairs
+
+Some modules will send single values, while others will send lists of values
+
+
+- Sensor module:
+  - Receive
+    - 'value' - module will read the value associated with the type of sensor (f.i. luminosity percentage for the pmod_als sensor)
+    - {modify, rate, New_rate} - module will modify its data output rate, and replace it by 'New_rate'
+  - Send
+    - 'value' - every time a sensor module receives 'value', after reading, it will send 'value' to itself after a delay (depending on data rate)
+    - {value, {Value, Timestamp}, Sender}
+
+
+- Queue module:
+  - Receive
+    - {value, {Value, Timestamp}, Sender} - the pair {Value, Timestamp} is added to the queue. If the queue is full, is sends the list of values accumulated, removes the oldest value receive and adds the newest one
+    - {modify, max_size, New_max_size} - module will modify the size of the queue (maximum number of values it can hold before sending it)
+    - 'clear' - clears the queue (empty queue)
+
+Queues are used as a sliding window mechanism, accumulating data and sending a chunk of it to a module responsible for computating it.
+It holds a limited amount of data at a time (window), and removes older data when new ones come (slinding).
+
+
+- Aggregate module:
+  - Receive
+    - {list, List, Sender} - module receives a list, executes its given function on it and sends the results
+    - {modify, function, New_function} - replaces the function it executes by 'New_function'
+  - Send
+    - {value, {Value, Timestamp}, Sender}
+
+
+- Filter module:
+  - Receive
+    - {value, {Value, Timestamp}, Sender} - if the 'Value' satisfies a given filter predicate, it is forwarded (sent)
+    - {modify, predicate, New_predicate} - replaces the predicate by 'New_predicate'
+  - Send
+    - {value, {Value, Timestamp}, Sender}
+
+
+- Conditional module:
+  - Receive
+    - {value, {Value, Timestamp}, Sender} - executes a given function, depending on the 'Value' satisfying a given predicate or not, (and previous 'Value' received)
+    - {modify, predicate, New_predicate} - replaces the predicate by 'New_predicate'
+    - {modify, function, New_function} - replaces the function it executes by 'New_function'
