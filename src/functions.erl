@@ -27,9 +27,33 @@ min(Values) ->
 %% @spec mean(Values::list({float(), float()})) -> Result::float()
 mean(Values) ->
   Only_values_list = only_values(Values),
-  Sum = lists:sum(Only_values_list),
-  Length = length(Only_values_list),
-  Sum/Length.
+  Item = lists:nth(1, Only_values_list),
+  case Item of
+    [_|_] ->
+      mean_aux(Only_values_list);
+    _ ->
+      Sum = lists:sum(Only_values_list),
+      Length = length(Only_values_list),
+      Sum/Length
+  end.
+
+mean_aux([]) ->
+  0;
+mean_aux(Only_values_list) ->
+  mean_aux(Only_values_list, [0,0,0], 0).
+mean_aux([], AccList, Acc) ->
+  Div = division(Acc),
+  lists:map(Div, AccList);
+mean_aux([Head|Rest], [Acc1,Acc2,Acc3], Acc) ->
+  [A,B,C] = Head,
+  mean_aux(Rest, [Acc1+A, Acc2+B, Acc3+C], Acc+1).
+
+
+division(Divisor) ->
+  fun(Elem) ->
+    Elem / Divisor
+  end.
+
 
 
 %% @doc Gives the median value of the first 'Amount' items of the list 'Values'.

@@ -6,6 +6,7 @@
 -export([start/1]).
 -export([start_loop/1]).
 
+-record(state, {function}).
 -record(clients_list, {clients=[]}).
 
 
@@ -18,45 +19,46 @@ start(Function) ->
 
 % @doc Starts and restarts main loop.
 start_loop(Function) ->
-  loop({true, none}, Function, #clients_list{}).
+  loop({true, none}, #clients_list{}, #state{function=Function}).
 
 
-loop({Active, Deactivator}, Function, L=#clients_list{clients=Clients}) ->
+loop({Active, Deactivator}, L=#clients_list{clients=Clients}, S=#state{function=Function}) ->
   receive
 
     {list, List, _From} ->
       if
         not Active ->
           % Module is deactivated, ignore message
-          loop({Active, Deactivator}, Function, L);
+          loop({Active, Deactivator}, L, S);
         true ->
           compute_and_send(Function, List, Clients),
-          loop({Active, Deactivator}, Function, L)
+          loop({Active, Deactivator}, L, S)
       end;
 
     {modify, function, New_function} ->
-      loop({Active, Deactivator}, New_function, L);
+      loop({Active, Deactivator}, L, S#state{function=New_function});
 
     {trigger, From} ->
       case Deactivator of
-        none -> loop({false, From}, Function, L);
-        From -> loop({true, none}, Function, L);
-        _ -> loop({Active, Deactivator}, Function, L)
+        none -> loop({false, From}, L, S);
+        From -> loop({true, none}, L, S);
+        _ -> loop({Active, Deactivator}, L, S)
       end;
 
     restart ->
       start_loop(Function);
 
     {add_client, Pid} ->
-      loop({Active, Deactivator}, Function, L#clients_list{clients=[Pid|Clients]});
+      loop({Active, Deactivator}, L#clients_list{clients=[Pid|Clients]}, S);
 
     _ ->
       io:format("~p (Pid ~p) received an unexpected message~n", [?MODULE, self()]),
-      loop({Active, Deactivator}, Function, L)
+      loop({Active, Deactivator}, L, S)
   end.
 
 
 compute_and_send(Function, List, Clients) ->
   Value = Function(List),
-  Timestamp = erlang:timestamp(),
+  %Timestamp = erlang:timestamp(),
+  Timestamp = erlang:system_time(second),
   ok = utils:send_to_clients(Clients, {Value, Timestamp}, self()).

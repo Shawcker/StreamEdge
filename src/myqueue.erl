@@ -8,10 +8,13 @@
 -export([start/1]).
 -export([start_loop/1]).
 
--record(queue, {queue=queue:new(), current_size=0, max_size}).
+-record(queue, {queue=queue:new(), current_size=0, max_size=10, infinite=false}).
 -record(clients_list, {clients=[]}).
 
 
+start(infinite) ->
+  Pid = spawn(?MODULE, start_loop, [infinite]),
+  {ok, Pid};
 %% @doc Default start function
 %% @spec start(Max_size::integer()) -> {ok, Pid}
 start(Max_size) ->
@@ -20,11 +23,13 @@ start(Max_size) ->
 
 
 % @doc Starts and restarts main loop.
+start_loop(infinite) ->
+  loop({true, none}, #queue{infinite=true}, #clients_list{});
 start_loop(Max_size) ->
   loop({true, none}, #queue{max_size=Max_size}, #clients_list{}).
 
 
-loop({Active, Deactivator}, Q=#queue{queue=Queue, current_size=Current_size, max_size=Max_size}, L=#clients_list{clients=Clients}) ->
+loop({Active, Deactivator}, Q=#queue{queue=Queue, current_size=Current_size, max_size=Max_size, infinite=Infinite}, L=#clients_list{clients=Clients}) ->
   receive
 
     {value, {Value, Timestamp}, _From} ->
@@ -33,15 +38,14 @@ loop({Active, Deactivator}, Q=#queue{queue=Queue, current_size=Current_size, max
           % Module is deactivated, ignore message
           loop({Active, Deactivator}, Q, L);
         true ->
-          Condition = Current_size < Max_size-1,
+          Condition = (Current_size < Max_size-1) or Infinite,
           if
             Condition ->
               % Add to queue
               loop({Active, Deactivator}, Q#queue{queue=queue:in({Value, Timestamp}, Queue), current_size=Current_size+1}, L);
             true ->
               % Send queue, then add/remove
-              List_to_send = queue:to_list(Queue),
-              utils:send_to_clients(Clients, List_to_send, self()),
+              to_list_and_send(Queue, Clients),
               Tmp = queue:drop(Queue),
               loop({Active, Deactivator}, Q#queue{queue=queue:in({Value, Timestamp}, Tmp), current_size=Max_size}, L)
           end
@@ -50,9 +54,20 @@ loop({Active, Deactivator}, Q=#queue{queue=Queue, current_size=Current_size, max
 
     {trigger, From} ->
       case Deactivator of
-        none -> loop({false, From}, Q, L);
-        From -> loop({true, none}, Q, L);
-        _ -> loop({Active, Deactivator}, Q, L)
+        none ->
+          if
+            Infinite ->
+              to_list_and_send(Queue, Clients),
+              loop({false, From}, #queue{infinite=true}, L);
+            true ->
+              loop({false, From}, Q, L)
+          end;
+
+        From ->
+          loop({true, none}, Q, L);
+
+        _ ->
+          loop({Active, Deactivator}, Q, L)
       end;
       
 
@@ -72,3 +87,11 @@ loop({Active, Deactivator}, Q=#queue{queue=Queue, current_size=Current_size, max
       io:format("~p (Pid ~p) received an unexpected message~n", [?MODULE, self()]),
       loop({Active, Deactivator}, Q, L)
   end.
+
+
+%% AUXILIARY FUNCTIONS
+
+
+to_list_and_send(Queue, Clients) ->
+  List_to_send = queue:to_list(Queue),
+  utils:send_to_clients(Clients, List_to_send, self()).

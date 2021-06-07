@@ -4,7 +4,7 @@
 -export([start/0, start/1, start/2]).
 -export([start_loop/1]).
 
--record(data_rate, {rate=1000}).
+-record(state, {rate=1000}).
 -record(clients_list, {clients=[]}).
 
 
@@ -30,43 +30,44 @@ start(Rate, no_init) when Rate < 1000 ->
 
 start_loop(Rate) ->
   self() ! value,
-  loop({true, none}, #clients_list{clients=[]}, #data_rate{rate=Rate}).
+  loop({true, none}, #clients_list{clients=[]}, #state{rate=Rate}).
 
 
 init() ->
   grisp:add_device(spi1, pmod_gyro).
 
 
-loop({Active, Deactivator}, L=#clients_list{clients=Clients}, R=#data_rate{rate=Rate}) ->
+loop({Active, Deactivator}, L=#clients_list{clients=Clients}, S=#state{rate=Rate}) ->
   receive
     value ->
       if
         not Active ->
           % Module is deactivated, ignore message
-          loop({Active, Deactivator}, L, R);
+          loop({Active, Deactivator}, L, S);
         true ->
           Gyroscopes = pmod_nav:read(),
-          Timestamp = erlang:timestamp(),
+          %Timestamp = erlang:timestamp(),
+          Timestamp = erlang:system_time(second),
           ok = utils:send_to_clients(Clients, {Gyroscopes, Timestamp}, self()),
           timer:sleep(Rate),
           self() ! value,
-          loop({Active, Deactivator}, L, R)
+          loop({Active, Deactivator}, L, S)
       end;
 
 
     {add_client, Pid} ->
-      loop({Active, Deactivator}, L#clients_list{clients=[Pid|Clients]}, R);
+      loop({Active, Deactivator}, L#clients_list{clients=[Pid|Clients]}, S);
 
 
     {modify, rate, New_rate} ->
-      loop({Active, Deactivator}, L, R#data_rate{rate=New_rate});
+      loop({Active, Deactivator}, L, S#state{rate=New_rate});
 
 
     {trigger, From} ->
       case Deactivator of
-        none -> loop({false, From}, L, R);
-        From -> loop({true, none}, L, R);
-        _ -> loop({Active, Deactivator}, L, R)
+        none -> loop({false, From}, L, S);
+        From -> loop({true, none}, L, S);
+        _ -> loop({Active, Deactivator}, L, S)
       end;
 
 
@@ -76,5 +77,5 @@ loop({Active, Deactivator}, L=#clients_list{clients=Clients}, R=#data_rate{rate=
 
     _ ->
       io:format("Unexpected message format~n"),
-      loop({Active, Deactivator}, L, R)
+      loop({Active, Deactivator}, L, S)
   end.
