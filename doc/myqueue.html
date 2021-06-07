@@ -19,7 +19,7 @@
   When a queue is full, it sends all its data to another module, which will compute the data.
   Queues represent a sliding window. It has a certain maximum size, which when reached, will add new data and remove oldest data (FIFO).
 <h2><a name="index">Function Index</a></h2>
-<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#start-1">start/1</a></td><td>Default start function.</td></tr>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#start-1">start/1</a></td><td></td></tr>
 <tr><td valign="top"><a href="#start_loop-1">start_loop/1</a></td><td>Starts and restarts main loop.</td></tr>
 </table>
 
@@ -27,8 +27,8 @@
 
 <h3 class="function"><a name="start-1">start/1</a></h3>
 <div class="spec">
-<p><tt>start(Max_size::integer()) -&gt; {ok, Pid}</tt><br></p>
-</div><p>Default start function</p>
+<p><tt>start(Max_size) -&gt; any()</tt></p>
+</div>
 
 <h3 class="function"><a name="start_loop-1">start_loop/1</a></h3>
 <div class="spec">
