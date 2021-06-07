@@ -1,0 +1,1 @@
+FILE='mysuperfile' rebar3 as emulation shell --sname my_dev_node --setcookie MyCookie
