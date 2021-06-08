@@ -38,16 +38,26 @@ loop({Active, Deactivator}, Q=#queue{queue=Queue, current_size=Current_size, max
           % Module is deactivated, ignore message
           loop({Active, Deactivator}, Q, L);
         true ->
-          Condition = (Current_size < Max_size-1) or Infinite,
+          Condition = (Current_size < Max_size) or Infinite,
           if
             Condition ->
-              % Add to queue
-              loop({Active, Deactivator}, Q#queue{queue=queue:in({Value, Timestamp}, Queue), current_size=Current_size+1}, L);
+              Tmp_queue = queue:in({Value, Timestamp}, Queue),
+
+              % If Queue is full then send
+              Condition2 = (Current_size+1 == Max_size) and (not Infinite),
+              if
+                Condition2 ->
+                  to_list_and_send(Tmp_queue, Clients),
+                  loop({Active, Deactivator}, Q#queue{queue=Tmp_queue, current_size=Current_size+1}, L);
+                true ->
+                  loop({Active, Deactivator}, Q#queue{queue=Tmp_queue, current_size=Current_size+1}, L)
+              end;
             true ->
-              % Send queue, then add/remove
-              to_list_and_send(Queue, Clients),
-              Tmp = queue:drop(Queue),
-              loop({Active, Deactivator}, Q#queue{queue=queue:in({Value, Timestamp}, Tmp), current_size=Max_size}, L)
+              % Add/remove then send queue
+              Tmp_queue = queue:in({Value, Timestamp}, queue:drop(Queue)),
+              to_list_and_send(Tmp_queue, Clients),
+
+              loop({Active, Deactivator}, Q#queue{queue=Tmp_queue, current_size=Max_size}, L)
           end
       end;
 
