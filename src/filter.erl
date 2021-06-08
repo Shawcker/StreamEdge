@@ -6,7 +6,7 @@
 -export([start/1]).
 -export([start_loop/1]).
 
--record(state, {predicate, rate=1000}).
+-record(state, {predicate}).
 -record(clients_list, {clients=[]}).
 
 
