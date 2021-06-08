@@ -33,11 +33,13 @@ get_hostname() ->
     {ok, Hostname} -> Hostname
   end.
 
+
 %% @doc Retrieve the given environment variable
 get(Key) ->
   case application:get_env(streamdb, Key) of
     {ok, Value} -> Value
   end.
+
 
 %% @doc Add Module_pid to the list of clients of Subscriber_pid
 subscribe(Subscriber_pid, Module_pid) ->
