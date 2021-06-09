@@ -12,9 +12,15 @@
 %--- Callbacks -----------------------------------------------------------------
 
 %% @doc start main application
-start(_Type, _Args) ->
+start(_Type, Args) ->
   streamdb_sup:start_link(),
   register(me, self()),
+  Filename = utils:get(filename),
+  FullString = file_utils:read_lines(Filename),
+
+  Each = string:split(FullString, "\n"),
+  file_utils:print_strings(Each),
+
   loop().
 
 
