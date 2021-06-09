@@ -1,4 +1,5 @@
 %% encoding: UTF-8
-{application,streamdb}.
-{modules,[aggregate,api,conditional,filter,functions,myqueue,scenarii,
-          sensor_als,sensor_gyro,sensor_nav,streamdb,streamdb_sup,utils]}.
+{application,streamedge}.
+{modules,[aggregate,api,conditional,file_utils,filter,functions,myqueue,
+          scenarii,sensor_als,sensor_gyro,sensor_nav,streamedge,
+          streamedge_sup,utils]}.
