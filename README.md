@@ -1,4 +1,4 @@
-streamdb
+StreamEdge
 =====
 
 A GRiSP application
