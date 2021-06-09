@@ -1,6 +1,6 @@
 % @doc streamdb top level supervisor.
 % @end
--module(streamdb_sup).
+-module(streamedge_sup).
 
 -behavior(supervisor).
 

@@ -1,8 +1,8 @@
-{application, streamdb, [
+{application, streamedge, [
     {description, "A GRiSP application"},
     {vsn, "0.1.0"},
     {registered, []},
-    {mod, {streamdb, []}},
+    {mod, {streamedge, []}},
     {applications, [
         kernel,
         stdlib,
