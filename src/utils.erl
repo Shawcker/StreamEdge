@@ -36,7 +36,7 @@ get_hostname() ->
 
 %% @doc Retrieve the given environment variable
 get(Key) ->
-  case application:get_env(streamdb, Key) of
+  case application:get_env(streamedge, Key) of
     {ok, Value} -> Value
   end.
 

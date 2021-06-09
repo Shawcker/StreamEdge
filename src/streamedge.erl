@@ -1,6 +1,6 @@
 % @doc streamdb public API used to connect modules.
 % @end
--module(streamdb).
+-module(streamedge).
 
 -behavior(application).
 
@@ -12,8 +12,8 @@
 %--- Callbacks -----------------------------------------------------------------
 
 %% @doc start main application
-start(_Type, Args) ->
-  streamdb_sup:start_link(),
+start(_Type, _Args) ->
+  streamedge_sup:start_link(),
   register(me, self()),
   Filename = utils:get(filename),
   FullString = file_utils:read_lines(Filename),
