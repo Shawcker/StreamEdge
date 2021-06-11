@@ -2,10 +2,10 @@
 
 % Add hosts by filling in their ip addresses on the network and hostnames
 % Multiple hosts can be added
+% Example : {host, {192,168,43,238}, ["my_grisp_board"]}.
 % {host, {_,_,_,_}, ["hostname1"]}.
 % {host, {_,_,_,_}, ["hostname2"]}.
 
-{host, {192,168,43,238}, ["my_grisp_board"]}.
 
 % Do not monitor the hosts file
 {hosts_file, ""}.
