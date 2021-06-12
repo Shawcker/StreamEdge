@@ -37,35 +37,35 @@ launch_scenario(Number, Args, StartTime) ->
 %%%%%%%%%%%%%%%%%%%%% MAIN LOOP %%%%%%%%%%%%%%%%%%%%%
 
 
-tmp_loop(Pid, Data) ->
+loop(Pid, Data) ->
   receive
     {value, {Value, _Timestamp}, _From} ->
       io:format("Value : ~p~n", [Value]),
-      tmp_loop(Pid, Data);
+      loop(Pid, Data);
 
     {list, List, _From} ->
       io:format("List : ~p~n", [List]),
-      tmp_loop(Pid, [List|Data]);
+      loop(Pid, [List|Data]);
 
     {trigger, _From} ->
       case Pid of
         none ->
-          tmp_loop(Pid, Data);
+          loop(Pid, Data);
         _ ->
           Pid ! {trigger, me},
-          tmp_loop(Pid, Data)
+          loop(Pid, Data)
       end;
 
     {compute, mean, Relative} ->
       compute_data(Data, Relative),
-      tmp_loop(Pid, Data);
+      loop(Pid, Data);
 
     clear ->
-      tmp_loop(Pid, []);
+      loop(Pid, []);
 
     _ ->
       io:format("Unhandled message~n"),
-      tmp_loop(Pid, Data)
+      loop(Pid, Data)
   end.
 
 
@@ -73,16 +73,14 @@ tmp_loop(Pid, Data) ->
 
 
 scenario_0(none, StartTime) ->
-  Sensor_pid = api:add_sensor_nav(no_init),
+  Sensor_pid = api:add_sensor_nav(),
   register(als, Sensor_pid),
-  %Sensor_pid ! {trigger, me},
-  %subscribe(me, Sensor_pid),
 
   Queue_pid = api:add_queue_proc(infinite),
   utils:subscribe(Queue_pid, Sensor_pid),
   utils:subscribe(me, Queue_pid),
 
-  tmp_loop(Queue_pid, []);
+  loop(Queue_pid, []);
 
 scenario_0(Node, StartTime) ->
   utils:connect_to_node(Node),
@@ -90,18 +88,17 @@ scenario_0(Node, StartTime) ->
   case Nodes of
     [] ->
       io:format("Not connected to given node~n"),
-      tmp_loop(none, []);
+      loop(none, []);
     _ ->
       ok
   end,
   Name = lists:nth(1, nodes()),
-  %SName = string:split(Name, "@"),
-  {me, Name} ! {scenario, 0, none},
+  {me, Name} ! {scenario, 0, {none, self()}},
 
   Sensor_pid = api:add_sensor_als(),
   utils:subscribe(self(), Sensor_pid),
 
-  Below_trigger = functions:pred_filter_above(25),
+  Below_trigger = functions:pred_filter_above(65),
   Conditional_pid = api:add_conditional_proc(Below_trigger),
 
   utils:subscribe(Conditional_pid, Sensor_pid),
@@ -111,17 +108,22 @@ scenario_0(Node, StartTime) ->
 
   Conditional_pid ! {modify, function, Send_trigger},
 
-  tmp_loop({me, Name}, []).
+  loop({me, Name}, []).
 
 
 %%%%%%%%%%%%%%%%%%%%% SCENARIO 1 %%%%%%%%%%%%%%%%%%%%%
 
 
-scenario_1(Args, StartTime) ->
+scenario_1(_Args, StartTime) ->
   Sensor_pid = api:add_sensor_als(),
-  utils:subscribe(self(), Sensor_pid),
-  register(als, Sensor_pid),
-  tmp_loop(me, []).
+
+  Filter_pid = api:add_filter_proc(functions:pred_filter_above(65)),
+
+  utils:subscribe(Filter_pid, Sensor_pid),
+
+  utils:subscribe(self(), Filter_pid),
+
+  loop(me, []).
 
 
 %%%%%%%%%%%%%%%%%%%%% SCENARIO 1 %%%%%%%%%%%%%%%%%%%%%
@@ -131,7 +133,7 @@ scenario_2(_Args, _StartTime) ->
   Sensor_pid = api:add_sensor_nav(no_init),
   utils:subscribe(self(), Sensor_pid),
   register(sensor, Sensor_pid),
-  tmp_loop(me, []).
+  loop(me, []).
 
 
 %%%%%%%%%%%%%%%%%%%%% AUXILIARY FUNCTIONS %%%%%%%%%%%%%%%%%%%%%

@@ -46,7 +46,6 @@ loop({Active, Deactivator}, L=#clients_list{clients=Clients}, S=#state{rate=Rate
           loop({Active, Deactivator}, L, S);
         true ->
           Percentage = pmod_als:percentage(),
-          %Timestamp = erlang:timestamp(),
           Timestamp = erlang:system_time(second),
           ok = utils:send_to_clients(Clients, {Percentage, Timestamp}, self()),
           timer:sleep(Rate),

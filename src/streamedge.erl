@@ -15,18 +15,15 @@
 start(_Type, _Args) ->
   streamedge_sup:start_link(),
   register(me, self()),
-  Filename = utils:get(filename),
-  FullString = file_utils:read_lines(Filename),
-
-  Each = string:split(FullString, "\n"),
-  file_utils:print_strings(Each),
-
   loop().
 
 
 stop(_State) -> ok.
 
 
+%% @doc start scenario with number Number with optional list of arguments Args
+start_scenario(Number) ->
+  me ! {scenario, Number, []}.
 start_scenario(Number, Args) ->
   me ! {scenario, Number, Args}.
 
@@ -48,7 +45,8 @@ loop() ->
     {scenario, Number, Args} ->
       io:format("Launching scenario ~p~n", [Number]),
       StartTime = erlang:system_time(second),
-      scenarii:launch_scenario(Number, Args, StartTime);
+      scenarii:launch_scenario(Number, Args, StartTime),
+      loop();
 
     _ ->
       io:format("Unexpected message format~n"),

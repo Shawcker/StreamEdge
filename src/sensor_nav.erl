@@ -47,7 +47,6 @@ loop({Active, Deactivator}, L=#clients_list{clients=Clients}, S=#state{rate=Rate
           loop({Active, Deactivator}, L, S);
         true ->
           Accelerometer = pmod_nav:read(acc, [out_x_xl, out_y_xl, out_z_xl]),
-          %Timestamp = erlang:timestamp(),
           Timestamp = erlang:system_time(second),
           ok = utils:send_to_clients(Clients, {Accelerometer, Timestamp}, self()),
           timer:sleep(Rate),

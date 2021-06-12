@@ -46,7 +46,6 @@ loop({Active, Deactivator}, L=#clients_list{clients=Clients}, S=#state{rate=Rate
           loop({Active, Deactivator}, L, S);
         true ->
           Gyroscopes = pmod_nav:read(),
-          %Timestamp = erlang:timestamp(),
           Timestamp = erlang:system_time(second),
           ok = utils:send_to_clients(Clients, {Gyroscopes, Timestamp}, self()),
           timer:sleep(Rate),
