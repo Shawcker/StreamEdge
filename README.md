@@ -6,7 +6,7 @@ StreamEdge is a GRiSP application providing tools to facilitate the development 
 
 GRiSP project:
 * [Github](https://github.com/grisp/grisp/)
-* [Website] (https://grisp.org)
+* [Website](https://grisp.org)
 
 Build
 -----
