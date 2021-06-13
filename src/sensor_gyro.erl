@@ -65,7 +65,8 @@ loop({Active, Deactivator}, L=#clients_list{clients=Clients}, S=#state{rate=Rate
     {trigger, From} ->
       case Deactivator of
         none -> loop({false, From}, L, S);
-        From -> loop({true, none}, L, S);
+        From -> self() ! value,
+                loop({true, none}, L, S);
         _ -> loop({Active, Deactivator}, L, S)
       end;
 
