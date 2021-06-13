@@ -1,4 +1,4 @@
--module(scenarii).
+-module(scenario).
 
 -export([start_scenario/2, launch_scenario/3]).
 
