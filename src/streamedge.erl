@@ -45,7 +45,7 @@ loop() ->
     {scenario, Number, Args} ->
       io:format("Launching scenario ~p~n", [Number]),
       StartTime = erlang:system_time(second),
-      scenarii:launch_scenario(Number, Args, StartTime),
+      scenario:launch_scenario(Number, Args, StartTime),
       loop();
 
     _ ->
